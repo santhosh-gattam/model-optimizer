@@ -1,0 +1,62 @@
+{
+  "name": "Energy Load Prediction FFN",
+  "description": "Regression Analysis on Energy load data",
+  "run_parameters": {
+    "learning_rate": 0.001,
+    "epoch": 10000,
+    "display_step": 1000
+  },
+  "hyper_parameters": {
+    "cost": "MEAN_SQUARE_ERROR",
+    "optimizer": "ADAM",
+    "training_mode": "NORMAL"
+  },
+  "layers": {
+    "1": {
+    "layer_type": "INPUT_LAYER",
+    "layer_name": "ffn input layer",
+    "layer_parameters": {
+      "layer_nodes": 8
+    },
+    "file_parameters": {
+      "file_name": "energy_c.csv",
+      "split_ratio": 60,
+      "delimiter": ",",
+      "randomize": true,
+      "normalize": false,
+      "label_vector": false
+    }
+  },
+    "2": {
+      "layer_type": "OUTPUT_LAYER",
+      "layer_name": "Layer 3 (Output Layer 1)",
+      "layer_parameters": {
+        "layer_nodes": 1,
+        "layer_activation": "NONE",
+        "layer_weights": {
+          "initializer_type": "RANDOM_UNIFORM",
+          "initializer_parameters": {
+            "min_val": -1.0,
+            "max_val": 1.0,
+            "seed": null
+          }
+        },
+        "layer_bias": {
+          "initializer_type": "ZEROS",
+          "initializer_parameters": {}
+        }
+      }
+    },
+    "connections": {
+      "1": {
+        "type": "SIMPLE",
+        "source": [
+          1
+        ],
+        "target": [
+          2
+        ]
+      }
+    }
+  }
+}
