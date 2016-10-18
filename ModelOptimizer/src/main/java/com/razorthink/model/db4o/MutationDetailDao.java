@@ -33,7 +33,7 @@ public class MutationDetailDao {
 
 	}
 
-	public static List<MutationDetail> sortByAttribute( String dbName, String attributeName )
+	public static List<MutationDetail> rankByAttribute( String dbName, String attributeName )
 	{
 
 		if( db == null )
@@ -44,22 +44,23 @@ public class MutationDetailDao {
 
 		ObjectSet<MutationDetail> result = q.execute();
 		List<MutationDetail> sortedMutationDetails = new ArrayList<>();
-		MutationDetail.printHeader();
+		int rank = 1;
 		while( result.hasNext() )
 		{
 			MutationDetail p = result.next();
-			p.print();
+			p.setRank(rank++);
 			sortedMutationDetails.add(p);
 
 		}
-		return sortedMutationDetails;
-		//		truncateAndDelete(dbName);
 
-		//		for( MutationDetail mutationDetail : sortedMutationDetails )
-		//		{
-		//			db.store(mutationDetail);
-		//			db.commit();
-		//		}
+		truncateAndDelete(dbName);
+
+		for( MutationDetail mutationDetail : sortedMutationDetails )
+		{
+			db.store(mutationDetail);
+			db.commit();
+		}
+		return sortedMutationDetails;
 	}
 
 	public static void printAllDBObject( String dbmane )
@@ -94,7 +95,6 @@ public class MutationDetailDao {
 		q.constrain(MutationDetail.class);
 
 		ObjectSet<MutationDetail> result = q.execute();
-		MutationDetail.printHeader();
 		while( result.hasNext() )
 		{
 			MutationDetail p = result.next();
