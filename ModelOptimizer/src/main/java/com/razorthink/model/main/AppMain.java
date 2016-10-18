@@ -1,9 +1,12 @@
 package com.razorthink.model.main;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 import com.razorthink.model.constant.Constant;
 import com.razorthink.model.core.ModelManager;
 import com.razorthink.model.db4o.ModelDetailDao;
@@ -43,24 +46,22 @@ public class AppMain {
 		String mutationTableName = "ModelMutation.data";
 		String modelTableName = "Model.data";
 
+		// delete previous run files are directories
 		MutationDetailDao.truncateAndDelete(mutationTableName);
 		MutationDetailDao.truncateAndDelete(modelTableName);
+		org.apache.commons.io.FileUtils.deleteDirectory(new File(Constant.TARGET_DIR + "MutatedModels/"));
 
-		String modelJSonFilePath = "/home/rijo/Documents/Model.josn";
-		String jsonModel = FileUtils.readContentAsString(modelJSonFilePath);
+		String modelJSonFilePath = "Model.json";
+		String jsonModel = FileUtils.getResourceFileAsString(modelJSonFilePath);
+
 		Model sampleModel = JSONUtil.jacksonParse(jsonModel, Model.class);
 		registerMutators();
 		modelManager.runNMutation(10, sampleModel);
 
 		ModelDetailDao.printAllDBObject(modelTableName);
-		List<MutationDetail> result = MutationDetailDao.sortByAttribute(mutationTableName, "accuracy");
 
-		ArrayList<MutationDetail> top10Per = getTopResults(50.0, result);
-
-		for( MutationDetail mutationDetail : top10Per )
-		{
-			mutationDetail.print();
-		}
+		Timer timer = new Timer();
+		timer.schedule(new RankByAccuracy(), 0, 1000);
 
 	}
 
@@ -78,6 +79,26 @@ public class AppMain {
 		boolean selfRegister = true;
 		new CostMutator("COST", selfRegister);
 		new OptimizerMutator("OPTIMIZER", selfRegister);
+	}
+
+	public static class RankByAccuracy extends TimerTask {
+
+		@Override
+		public void run()
+		{
+			String mutationTableName = "ModelMutation.data";
+			List<MutationDetail> result = MutationDetailDao.rankByAttribute(mutationTableName, "accuracy");
+
+			//		ArrayList<MutationDetail> top10Per = getTopResults(50.0, result);
+			//
+			//		for( MutationDetail mutationDetail : top10Per )
+			//		{
+			//			mutationDetail.print();
+			//		}
+
+			MutationDetailDao.printAllDBObject(mutationTableName);
+		}
+
 	}
 
 }

@@ -11,17 +11,23 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.apache.commons.io.IOUtils;
 
 public class FileUtils {
 
-	public static String getDirectoryName(String installationLocation, String condition) {
+	public static String getDirectoryName( String installationLocation, String condition )
+	{
 		String directory = "";
 		File[] root = new File(installationLocation).listFiles();
-		if (root != null && root.length > 0) {
-			for (File file : root) {
-				if (file.isDirectory() && file.getName().toLowerCase().contains(condition.toLowerCase())) {
+		if( root != null && root.length > 0 )
+		{
+			for( File file : root )
+			{
+				if( file.isDirectory() && file.getName().toLowerCase().contains(condition.toLowerCase()) )
+				{
 					directory = file.getName();
 					break;
 				}
@@ -31,15 +37,39 @@ public class FileUtils {
 
 	}
 
-	public static String getFileContents(File file) {
+	public static String getResourceFileAsString( String fileName )
+	{
 
-		try {
+		InputStream is = FileUtils.class.getResourceAsStream("/" + fileName);
+		if( is == null )
+		{
+			return null;
+		}
+
+		StringWriter writer = new StringWriter();
+		try
+		{
+			IOUtils.copy(is, writer);
+		}
+		catch( IOException e )
+		{
+			return null;
+		}
+		return writer.toString();
+	}
+
+	public static String getFileContents( File file )
+	{
+
+		try
+		{
 
 			String line = null;
 			String contents = "";
 
 			BufferedReader reader = new BufferedReader(new FileReader(file));
-			while ((line = reader.readLine()) != null) {
+			while( (line = reader.readLine()) != null )
+			{
 
 				contents += line + "\n";
 
@@ -47,60 +77,77 @@ public class FileUtils {
 			reader.close();
 			return contents;
 
-		} catch (Exception e) {
+		}
+		catch( Exception e )
+		{
 			return null;
 
 		}
 
 	}
 
-	public static InputStream getFileInputStream(String fileName) throws Exception {
+	public static InputStream getFileInputStream( String fileName ) throws Exception
+	{
 		InputStream is = FileUtils.class.getResourceAsStream("/" + fileName);
-		if (is == null) {
+		if( is == null )
+		{
 			throw new Exception();
 		}
 		return is;
 	}
 
-	public static void appendToFile(String filePath, String line) {
-		try {
+	public static void appendToFile( String filePath, String line )
+	{
+		try
+		{
 			new File(filePath.substring(0, filePath.lastIndexOf("/"))).mkdirs();
 			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath, true)));
 			out.println(line);
 			out.close();
-		} catch (IOException e) {
+		}
+		catch( IOException e )
+		{
 			new Exception(e);
 		}
 
 	}
 
-	public static String readFromFile(String filePath, Integer numLines) {
+	public static String readFromFile( String filePath, Integer numLines )
+	{
 
 		BufferedReader in = null;
 		String line = "";
 
 		StringBuffer sb = new StringBuffer();
-		try {
+		try
+		{
 			in = new BufferedReader(new FileReader(filePath));
-			try {
+			try
+			{
 				int count = 0;
-				while ((numLines == null || count < numLines) && (line = in.readLine()) != null) {
+				while( (numLines == null || count < numLines) && (line = in.readLine()) != null )
+				{
 					sb.append(line + "\n");
 					count++;
 				}
 
 				in.close();
-			} catch (IOException e) {
+			}
+			catch( IOException e )
+			{
 				new Exception(e);
 			}
-		} catch (FileNotFoundException e) {
+		}
+		catch( FileNotFoundException e )
+		{
 			new Exception(e);
 		}
 
 		return sb.toString();
 	}
 
-	public static String readContentAsString(String filePath) throws IOException {
+	public static String readContentAsString( String filePath ) throws IOException
+	{
 		File file = new File(filePath);
 		FileInputStream fis = new FileInputStream(file);
 		byte[] data = new byte[(int) file.length()];
@@ -110,23 +157,31 @@ public class FileUtils {
 		return new String(data, "UTF-8");
 	}
 
-	public static void unZip(ZipInputStream zipInputStream, String outputFolder) {
-		try {
+	public static void unZip( ZipInputStream zipInputStream, String outputFolder )
+	{
+		try
+		{
 			ZipEntry zipEntry = zipInputStream.getNextEntry();
 
 			File folder = new File(outputFolder);
-			if (!folder.isDirectory()) {
+			if( !folder.isDirectory() )
+			{
 				folder.mkdir();
 			}
-			if (zipEntry == null) {
+			if( zipEntry == null )
+			{
 				return;
 			}
-			while (zipEntry != null) {
+			while( zipEntry != null )
+			{
 
 				String newFilePath = outputFolder + zipEntry.getName();
-				if (!zipEntry.isDirectory()) {
+				if( !zipEntry.isDirectory() )
+				{
 					extractZipFile(zipInputStream, newFilePath);
-				} else {
+				}
+				else
+				{
 					new File(newFilePath).mkdir();
 				}
 
@@ -135,35 +190,46 @@ public class FileUtils {
 
 			zipInputStream.closeEntry();
 			zipInputStream.close();
-		} catch (FileNotFoundException e) {
+		}
+		catch( FileNotFoundException e )
+		{
 			// TODO Auto-generated catch block
 			new Exception(e);
-		} catch (IOException e) {
+		}
+		catch( IOException e )
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
-	private static void extractZipFile(ZipInputStream zipInputStream, String filePath) {
-		try {
+	private static void extractZipFile( ZipInputStream zipInputStream, String filePath )
+	{
+		try
+		{
 			File inputFile = new File(filePath);
 			String parentFilePath = inputFile.getParent();
-			if (!(new File(parentFilePath).isDirectory()))
+			if( !(new File(parentFilePath).isDirectory()) )
 				new File(parentFilePath).mkdirs();
 
 			FileOutputStream fos = new FileOutputStream(inputFile);
 			byte[] buffer = new byte[1024];
 
 			int length;
-			while ((length = zipInputStream.read(buffer)) > 0) {
+			while( (length = zipInputStream.read(buffer)) > 0 )
+			{
 				fos.write(buffer, 0, length);
 			}
 
 			fos.close();
-		} catch (FileNotFoundException e) {
-			      new Exception(e);
-		} catch (IOException e) {
+		}
+		catch( FileNotFoundException e )
+		{
+			new Exception(e);
+		}
+		catch( IOException e )
+		{
 			e.printStackTrace();
 		}
 	}

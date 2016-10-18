@@ -7,6 +7,7 @@ public class MutationDetail implements Comparable<MutationDetail> {
 	private String path;
 	private Double cost;
 	private Double accuracy;
+	private int rank;
 
 	public MutationDetail( int mutationId, int parentId, String path, Double cost, Double accuracy )
 	{
@@ -70,13 +71,14 @@ public class MutationDetail implements Comparable<MutationDetail> {
 
 	public static void printHeader()
 	{
-		System.out.format("%16s|%16s|%32s|%16s|%16s\n", "ID", "PARENT_ID", "FILE_PATH", "COST", "ACCURACY");
+		System.out.format("%16s|%16s|%32s|%16s|%16s|%16s\n", "ID", "PARENT_ID", "FILE_PATH", "COST", "ACCURACY",
+				"RANK");
 
 	}
 
 	public void print()
 	{
-		System.out.format("%16d|%16d|%32s|%16f|%16f\n", mutationId, parentId, path, cost, accuracy);
+		System.out.format("%16d|%16d|%32s|%16f|%16f|%16d\n", mutationId, parentId, path, cost, accuracy, rank);
 
 	}
 
@@ -93,6 +95,16 @@ public class MutationDetail implements Comparable<MutationDetail> {
 		if( o.getAccuracy() > this.accuracy )
 			return 1;
 		return 0;
+	}
+
+	public int getRank()
+	{
+		return rank;
+	}
+
+	public void setRank( int rank )
+	{
+		this.rank = rank;
 	}
 
 }
