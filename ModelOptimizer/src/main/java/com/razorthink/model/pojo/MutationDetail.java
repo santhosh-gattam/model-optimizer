@@ -1,6 +1,6 @@
 package com.razorthink.model.pojo;
 
-public class MutationDetail {
+public class MutationDetail implements Comparable<MutationDetail> {
 
 	private int mutationId = 0;
 	private int parentId;
@@ -8,9 +8,8 @@ public class MutationDetail {
 	private Double cost;
 	private Double accuracy;
 
-	
-
-	public MutationDetail(int mutationId, int parentId, String path, Double cost, Double accuracy) {
+	public MutationDetail( int mutationId, int parentId, String path, Double cost, Double accuracy )
+	{
 		super();
 		this.mutationId = mutationId;
 		this.parentId = parentId;
@@ -71,13 +70,13 @@ public class MutationDetail {
 
 	public static void printHeader()
 	{
-		System.out.format("%16s|%16s|%32s|%16s|%16s", "ID", "PARENT_ID", "FILE_PATH", "COST", "ACCURACY");
+		System.out.format("%16s|%16s|%32s|%16s|%16s\n", "ID", "PARENT_ID", "FILE_PATH", "COST", "ACCURACY");
 
 	}
 
 	public void print()
 	{
-		System.out.format("%16d|%16d|%32s|%16f|%16f", mutationId, parentId, path, cost, accuracy);
+		System.out.format("%16d|%16d|%32s|%16f|%16f\n", mutationId, parentId, path, cost, accuracy);
 
 	}
 
@@ -87,4 +86,13 @@ public class MutationDetail {
 		MutationDetail other = (MutationDetail) obj;
 		return (other.getMutationId() == this.getMutationId() && other.getParentId() == this.getParentId());
 	}
+
+	@Override
+	public int compareTo( MutationDetail o )
+	{
+		if( o.getAccuracy() > this.accuracy )
+			return 1;
+		return 0;
+	}
+
 }
