@@ -56,7 +56,9 @@ public class AppMain {
 
 		Model sampleModel = JSONUtil.jacksonParse(jsonModel, Model.class);
 		registerMutators();
-		modelManager.runNMutation(10, sampleModel);
+		modelManager.runNMutation(10, sampleModel, 1);
+
+		modelManager.runNMutation(10, sampleModel, 2);
 
 		ModelDetailDao.printAllDBObject(modelTableName);
 
@@ -87,7 +89,8 @@ public class AppMain {
 		public void run()
 		{
 			String mutationTableName = "ModelMutation.data";
-			List<MutationDetail> result = MutationDetailDao.rankByAttribute(mutationTableName, "accuracy");
+			String modelTableName = "Model.data";
+			MutationDetailDao.rankByAttribute(modelTableName, mutationTableName, "accuracy");
 
 			//		ArrayList<MutationDetail> top10Per = getTopResults(50.0, result);
 			//

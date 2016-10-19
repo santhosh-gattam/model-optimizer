@@ -5,10 +5,10 @@ public class ModelDetail {
 	private int modelId = 0;
 	private String modelName;
 
-	public ModelDetail( String name )
+	public ModelDetail( String name, int id )
 	{
 		modelName = name;
-		modelId++;
+		modelId = id;
 	}
 
 	public int getModelId()

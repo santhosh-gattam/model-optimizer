@@ -7,8 +7,10 @@ import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.config.EmbeddedConfiguration;
+import com.db4o.query.Predicate;
 import com.db4o.query.Query;
 import com.razorthink.model.constant.Constant;
+import com.razorthink.model.pojo.ModelDetail;
 import com.razorthink.model.pojo.MutationDetail;
 
 public class MutationDetailDao {
@@ -33,34 +35,61 @@ public class MutationDetailDao {
 
 	}
 
-	public static List<MutationDetail> rankByAttribute( String dbName, String attributeName )
+	public static void rankByAttribute( String modelDB, String mutateDBName, String attributeName )
 	{
 
 		if( db == null )
-			initDb(dbName);
-		Query q = db.query();
-		q.constrain(MutationDetail.class);
-		q.descend(attributeName).orderDescending();
+			initDb(mutateDBName);
 
-		ObjectSet<MutationDetail> result = q.execute();
-		List<MutationDetail> sortedMutationDetails = new ArrayList<>();
-		int rank = 1;
-		while( result.hasNext() )
+		List<ModelDetail> parentModels = ModelDetailDao.getAllModel(modelDB);
+
+		if( parentModels.isEmpty() )
+			return;
+		// for every model, get corresponding mutations and apply rank based on accuary value
+		for( final ModelDetail model : parentModels )
 		{
-			MutationDetail p = result.next();
-			p.setRank(rank++);
-			sortedMutationDetails.add(p);
+			Query q = db.query();
+			q.constrain(MutationDetail.class);
+			q.descend(attributeName).orderDescending();
 
-		}
+			// get all mutations for current model
+			List<MutationDetail> result = db.query(new Predicate<MutationDetail>() {
 
-		truncateAndDelete(dbName);
+				@Override
+				public boolean match( MutationDetail mutationDetail )
+				{
 
-		for( MutationDetail mutationDetail : sortedMutationDetails )
-		{
-			db.store(mutationDetail);
+					return mutationDetail.getParentId() == model.getModelId();
+				}
+			});
+
+			// assign rank to each mutation based on accuarcy.
+			List<MutationDetail> sortedMutationDetails = new ArrayList<>();
+			int rank = 1;
+			for( MutationDetail mutationDetail : result )
+			{
+				mutationDetail.setRank(rank++);
+				sortedMutationDetails.add(mutationDetail);
+
+			}
+			// delete previous elements and rewrite with updated rank
+			deleteElements(mutateDBName, result);
+			for( MutationDetail mutationDetail : sortedMutationDetails )
+			{
+				db.store(mutationDetail);
+			}
 			db.commit();
 		}
-		return sortedMutationDetails;
+	}
+
+	private static void deleteElements( String mutateDBName, List<MutationDetail> result )
+	{
+		if( db == null )
+			initDb(mutateDBName);
+
+		for( MutationDetail mutationDetail : result )
+			db.delete(mutationDetail);
+
 	}
 
 	public static void printAllDBObject( String dbmane )
@@ -71,8 +100,6 @@ public class MutationDetailDao {
 
 		Query q = db.query();
 		q.constrain(MutationDetail.class);
-		//			q.descend("accuracy").orderDescending();
-
 		ObjectSet<MutationDetail> result = q.execute();
 		MutationDetail.printHeader();
 		while( result.hasNext() )
@@ -88,7 +115,7 @@ public class MutationDetailDao {
 	{
 		File f = new File(Constant.TARGET_DIR + "/" + dbName);
 		if( f.exists() )
-			f.delete();
+			System.out.println("Deleted file " + f.getAbsolutePath() + " : " + f.delete());
 		if( db == null )
 			return;
 		Query q = db.query();

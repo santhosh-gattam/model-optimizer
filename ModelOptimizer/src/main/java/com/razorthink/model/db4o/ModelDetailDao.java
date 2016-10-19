@@ -1,10 +1,13 @@
 package com.razorthink.model.db4o;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.config.EmbeddedConfiguration;
+import com.db4o.query.Query;
 import com.razorthink.model.constant.Constant;
 import com.razorthink.model.pojo.ModelDetail;
 import com.razorthink.model.pojo.MutationDetail;
@@ -31,33 +34,44 @@ public class ModelDetailDao {
 
 	}
 
+	public static List<ModelDetail> getAllModel( String dbName )
+	{
+		if( db == null )
+			initDb(dbName);
+
+		Query q = db.query();
+		q.constrain(ModelDetail.class);
+
+		ObjectSet<ModelDetail> result = q.execute();
+
+		List<ModelDetail> results = new ArrayList<>();
+		while( result.hasNext() )
+		{
+			results.add(result.next());
+		}
+		return results;
+	}
+
 	public static void printAllDBObject( String dbName )
 	{
 		System.out.println("DB : " + dbName + "\n===============================");
 
-		try
+		if( db == null )
+			initDb(dbName);
+
+		com.db4o.query.Query q = db.query();
+		q.constrain(ModelDetail.class);
+
+		ObjectSet<ModelDetail> result = q.execute();
+
+		ModelDetail.printHeader();
+		while( result.hasNext() )
 		{
-			if( db == null )
-				initDb(dbName);
-
-			com.db4o.query.Query q = db.query();
-			q.constrain(ModelDetail.class);
-
-			ObjectSet<ModelDetail> result = q.execute();
-
-			ModelDetail.printHeader();
-			while( result.hasNext() )
-			{
-				// Print Player
-				ModelDetail p = result.next();
-				p.print();
-			}
+			// Print Player
+			ModelDetail p = result.next();
+			p.print();
 		}
-		finally
-		{
-			if( db != null )
-				db.close();
-		}
+
 	}
 
 	public static void truncateOrDelete( String dbName )
