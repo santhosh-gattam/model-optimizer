@@ -66,7 +66,7 @@ public class ModelManager {
 		return model;
 	}
 
-	public void runNMutation( int n, Model model, int id )
+	public void runNMutation( int n, Model model )
 	{
 		ModelDetail modelDetails = new ModelDetail(model.getName());
 		ModelDetailDao.insertToDB4O(modelDetails, Constant.TARGET_DIR + "Model.data");

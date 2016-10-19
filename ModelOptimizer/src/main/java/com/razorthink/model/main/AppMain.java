@@ -56,9 +56,9 @@ public class AppMain {
 
 		Model sampleModel = JSONUtil.jacksonParse(jsonModel, Model.class);
 		registerMutators();
-		modelManager.runNMutation(10, sampleModel, 1);
+		modelManager.runNMutation(10, sampleModel);
 
-		modelManager.runNMutation(10, sampleModel, 2);
+		modelManager.runNMutation(10, sampleModel);
 
 		ModelDetailDao.printAllDBObject(modelTableName);
 
