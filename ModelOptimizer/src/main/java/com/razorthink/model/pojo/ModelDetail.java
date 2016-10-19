@@ -1,22 +1,24 @@
 package com.razorthink.model.pojo;
 
+import java.util.UUID;
+
 public class ModelDetail {
 
-	private int modelId = 0;
+	private String modelId;
 	private String modelName;
 
-	public ModelDetail( String name, int id )
+	public ModelDetail( String name )
 	{
 		modelName = name;
-		modelId = id;
+		modelId = UUID.randomUUID().toString();
 	}
 
-	public int getModelId()
+	public String getModelId()
 	{
 		return modelId;
 	}
 
-	public void setModelId( int modelId )
+	public void setModelId( String modelId )
 	{
 		this.modelId = modelId;
 	}
@@ -38,6 +40,6 @@ public class ModelDetail {
 
 	public void print()
 	{
-		System.out.format("%16d|%16s\n", modelId, modelName);
+		System.out.format("%16s|%16s\n", modelId, modelName);
 	}
 }

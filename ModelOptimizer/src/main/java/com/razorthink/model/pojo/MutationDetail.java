@@ -3,13 +3,13 @@ package com.razorthink.model.pojo;
 public class MutationDetail implements Comparable<MutationDetail> {
 
 	private int mutationId = 0;
-	private int parentId;
+	private String parentId;
 	private String path;
 	private Double cost;
 	private Double accuracy;
 	private int rank;
 
-	public MutationDetail( int mutationId, int parentId, String path, Double cost, Double accuracy )
+	public MutationDetail( int mutationId, String parentId, String path, Double cost, Double accuracy )
 	{
 		super();
 		this.mutationId = mutationId;
@@ -29,12 +29,12 @@ public class MutationDetail implements Comparable<MutationDetail> {
 		this.mutationId = mutationId;
 	}
 
-	public int getParentId()
+	public String getParentId()
 	{
 		return parentId;
 	}
 
-	public void setParentId( int parentId )
+	public void setParentId( String parentId )
 	{
 		this.parentId = parentId;
 	}
@@ -78,7 +78,7 @@ public class MutationDetail implements Comparable<MutationDetail> {
 
 	public void print()
 	{
-		System.out.format("%16d|%16d|%32s|%16f|%16f|%16d\n", mutationId, parentId, path, cost, accuracy, rank);
+		System.out.format("%16d|%16s|%32s|%16f|%16f|%16d\n", mutationId, parentId, path, cost, accuracy, rank);
 
 	}
 

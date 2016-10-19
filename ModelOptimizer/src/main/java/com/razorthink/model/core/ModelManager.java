@@ -68,9 +68,9 @@ public class ModelManager {
 
 	public void runNMutation( int n, Model model, int id )
 	{
-		ModelDetail modelDetails = new ModelDetail(model.getName(), id);
+		ModelDetail modelDetails = new ModelDetail(model.getName());
 		ModelDetailDao.insertToDB4O(modelDetails, Constant.TARGET_DIR + "Model.data");
-		int parentId = modelDetails.getModelId();
+		String parentId = modelDetails.getModelId();
 		for( int i = 0; i < n; i++ )
 		{
 

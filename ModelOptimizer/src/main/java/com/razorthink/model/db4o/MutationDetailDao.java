@@ -59,7 +59,7 @@ public class MutationDetailDao {
 				public boolean match( MutationDetail mutationDetail )
 				{
 
-					return mutationDetail.getParentId() == model.getModelId();
+					return mutationDetail.getParentId().equals(model.getModelId());
 				}
 			});
 
